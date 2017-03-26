@@ -1,0 +1,36 @@
+// clean :module-b:build
+plugins {
+    id 'com.gradle.build-scan' version '1.6'
+}
+
+buildScan {
+    licenseAgreementUrl = 'https://gradle.com/terms-of-service'
+    licenseAgree = 'yes'
+}
+
+allprojects {
+    group 'org.test'
+    version '1.0-SNAPSHOT'
+}
+
+subprojects {
+    apply plugin: 'java'
+}
+
+project(':module-a') {
+    jar.enabled false
+    task customJar(type: Jar) {
+        from sourceSets.main.output
+    }
+    artifacts {
+        it."default" customJar
+        archives customJar
+    }
+}
+
+project(':module-b') {
+    dependencies {
+        compile project(':module-a')
+//        compile project(path: ':module-a', configuration: 'default')
+    }
+}
